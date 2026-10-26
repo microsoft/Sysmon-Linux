@@ -5,7 +5,7 @@ resources:
   - repository: Sysmon
     type: github
     endpoint: sysinternals
-    name: Microsoft/SysmonForLinux
+    name: microsoft/Sysmon-Linux
 
   - repository: SysinternalsEBPF
     type: github
@@ -33,6 +33,8 @@ stages:
       timeoutInMinutes: 240
       steps:
       - checkout: self
+        # Preserve the directory used by build scripts and analysis filters.
+        path: s/SysmonForLinux
         submodules: true
 
       - checkout: SysinternalsEBPF

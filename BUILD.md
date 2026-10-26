@@ -70,7 +70,7 @@ sudo apt -y install build-essential gcc g++ make cmake libelf-dev llvm clang lib
 ## Build
 ```
 cd
-git clone --recurse-submodules https://github.com/Microsoft/SysmonForLinux.git
+git clone --recurse-submodules https://github.com/microsoft/Sysmon-Linux.git SysmonForLinux
 cd SysmonForLinux
 mkdir build
 cd build
