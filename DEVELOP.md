@@ -36,13 +36,6 @@ Equal timestamps are tracked independently. Stale records are purged on traffic
 using the existing 15-minute lifetime and one-minute check interval; continuous
 traffic does not postpone the next check.
 
-Run the focused regressions from the configured Linux build directory:
-```
-cmake --build . --target sysmonUnitTests
-./sysmonUnitTests --gtest_filter=NetworkTrackerTest.*
-```
-These tests exercise the bound without generating network traffic. They also
-cover duplicate timestamps, source replacement, expiry, and match/close cleanup.
 For a manual compatibility check on an isolated Linux VM, enable NetworkConnect
 logging without excluding loopback, start
 `python3 -m http.server 18080 --bind 127.0.0.1`, and make ten requests:
@@ -54,7 +47,8 @@ done
 Verify inbound Event ID 3 records have the Python server PID, `Initiated=false`,
 and destination port 18080. Stop the server with Ctrl-C. Repeat with the server
 bound to `::1` on port 18081 and URL `http://[::1]:18081/` for IPv6.
-Use the synthetic regressions, not a live network flood, to check saturation.
+This checks normal correlation, not saturation. Do not use a live network flood
+to test the capacity limit.
 
 ### Attaching a debugger
 
@@ -454,4 +448,3 @@ The 'volatile' keyword prevents the compiler from optimising the assembler
 instructions to a different location. The XSTR macro permits the use of
 defined values and expressions in asm statements - it is defined in
 sysinternalsEBPF\_helpers.c.
-

@@ -540,10 +540,8 @@ add_executable(sysmonUnitTests
                "${SYSMON_TESTS_SOURCE_DIR}/utils.cpp"
                "${SYSMON_TESTS_SOURCE_DIR}/RuleEntry.cpp"
                test/linuxRules.cpp
-               test/networkTracker.cpp
                linuxWideChar.c
                linuxHelpers.cpp
-               networkTracker.cpp
                outputxml.cpp
                sysmonevents_defs.c
                ${PUGIXML_SOURCE_DIR}/pugixml.cpp
@@ -560,7 +558,7 @@ add_executable(sysmonUnitTests
                "${PROJECT_BINARY_DIR}/yoursleep"
                )
 
-target_link_libraries(sysmonUnitTests ${GTEST_LIBRARIES} pthread ${openssl_SOURCE_DIR}/libcrypto.a ${CMAKE_DL_LIBS} "${SYSINTERNALS_EBPF_LIBRARY}")
+target_link_libraries(sysmonUnitTests ${GTEST_LIBRARIES} pthread ${openssl_SOURCE_DIR}/libcrypto.a ${CMAKE_DL_LIBS})
 add_dependencies(sysmonUnitTests openssl)
 target_include_directories(sysmonUnitTests PUBLIC
                            "${CMAKE_SOURCE_DIR}"
@@ -571,7 +569,6 @@ target_include_directories(sysmonUnitTests PUBLIC
                            "${TARGET_MULTIARCH_INCLUDE}"
                            "${PUGIXML_SOURCE_DIR}"
                            "${GTEST_INCLUDE_DIRS}"
-                           "${SYSINTERNALS_EBPF_INCLUDE_DIR}"
                            "${openssl_SOURCE_DIR}/include"
                            )
 

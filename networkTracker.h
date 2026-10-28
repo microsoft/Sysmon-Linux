@@ -204,8 +204,6 @@ namespace std {
 
 class NetworkTracker
 {
-    friend class NetworkTrackerTest;
-
     // connect tracking
     std::unordered_map<const void *, std::pair<pid_t, LONGLONG>> connectTracker;
     std::map<LONGLONG, const void *> connectTrackerTimes;
@@ -273,4 +271,3 @@ void NetworkTrackerUdpProgramTermination(struct NetworkTracker *n, pid_t pid);
 #endif
 
 #endif
-
