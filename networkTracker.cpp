@@ -75,15 +75,15 @@ void NetworkTracker::PurgeStale()
         auto it2 = acceptTrackerTimes.cbegin();
         while (it2 != acceptTrackerTimes.cend()) {
             if (curTime.QuadPart - it2->first > staleDuration) {
-                acceptTracker.erase(*(it2->second));
+                auto entry = acceptTracker.find(*(it2->second));
                 it2 = acceptTrackerTimes.erase(it2);
+                acceptTracker.erase(entry);
             } else {
                 break; // as this is an ordered map, we have exhausted all stale items
             }
         }
+        timeLastChecked = curTime;
     }
-
-    GetSystemTimeAsLargeInteger(&timeLastChecked);
 }
 
 //--------------------------------------------------------------------
@@ -157,9 +157,25 @@ pid_t NetworkTracker::SeenConnect(PSYSMON_EVENT_HEADER eventHdr)
 //--------------------------------------------------------------------
 void NetworkTracker::SeenAccept(AddrAndPort sourceAddrAndPort, AddrAndPort destAddrAndPort, LONGLONG eventTime)
 {
-    acceptTracker.erase(sourceAddrAndPort);
-    auto ret = acceptTracker.emplace(sourceAddrAndPort, std::pair<AddrAndPort, LONGLONG>(destAddrAndPort, eventTime));
-    acceptTrackerTimes.emplace(eventTime, &(ret.first->first));
+    auto it = acceptTracker.find(sourceAddrAndPort);
+    if (it != acceptTracker.end()) {
+        acceptTrackerTimes.erase(it->second.second);
+        acceptTracker.erase(it);
+    }
+
+    if (acceptTracker.size() >= MAX_ACCEPT_ENTRIES) {
+        auto oldest = acceptTrackerTimes.begin();
+        auto entry = acceptTracker.find(*(oldest->second));
+        acceptTrackerTimes.erase(oldest);
+        acceptTracker.erase(entry);
+        if (!acceptLimitReported) {
+            fprintf(stderr, "NetworkTracker::SeenAccept capacity reached; oldest pending accepts will be evicted (reported once)\n");
+            acceptLimitReported = true;
+        }
+    }
+
+    auto ret = acceptTracker.emplace(sourceAddrAndPort, std::make_pair(destAddrAndPort, acceptTrackerTimes.end()));
+    ret.first->second.second = acceptTrackerTimes.emplace(eventTime, &(ret.first->first));
 
     PurgeStale();
 }

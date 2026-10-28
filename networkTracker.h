@@ -209,8 +209,11 @@ class NetworkTracker
     std::map<LONGLONG, const void *> connectTrackerTimes;
 
     // accept tracking
-    std::unordered_map<AddrAndPort, std::pair<AddrAndPort, LONGLONG>> acceptTracker;
-    std::map<LONGLONG, const AddrAndPort *> acceptTrackerTimes;
+    static constexpr size_t MAX_ACCEPT_ENTRIES = 65536;
+    using AcceptTrackerTimes = std::multimap<LONGLONG, const AddrAndPort *>;
+    std::unordered_map<AddrAndPort, std::pair<AddrAndPort, AcceptTrackerTimes::iterator>> acceptTracker;
+    AcceptTrackerTimes acceptTrackerTimes;
+    bool acceptLimitReported = false;
 
     // UDP recv tracking
     std::map<LONGLONG, uint64_t> udpRecvTrackerTimes;
@@ -268,4 +271,3 @@ void NetworkTrackerUdpProgramTermination(struct NetworkTracker *n, pid_t pid);
 #endif
 
 #endif
-
