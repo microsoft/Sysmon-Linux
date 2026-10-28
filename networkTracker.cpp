@@ -75,8 +75,9 @@ void NetworkTracker::PurgeStale()
         auto it2 = acceptTrackerTimes.cbegin();
         while (it2 != acceptTrackerTimes.cend()) {
             if (curTime.QuadPart - it2->first > staleDuration) {
-                acceptTracker.erase(it2->second);
+                auto entry = acceptTracker.find(*(it2->second));
                 it2 = acceptTrackerTimes.erase(it2);
+                acceptTracker.erase(entry);
             } else {
                 break; // as this is an ordered map, we have exhausted all stale items
             }
@@ -164,16 +165,17 @@ void NetworkTracker::SeenAccept(AddrAndPort sourceAddrAndPort, AddrAndPort destA
 
     if (acceptTracker.size() >= MAX_ACCEPT_ENTRIES) {
         auto oldest = acceptTrackerTimes.begin();
-        acceptTracker.erase(oldest->second);
+        auto entry = acceptTracker.find(*(oldest->second));
         acceptTrackerTimes.erase(oldest);
+        acceptTracker.erase(entry);
         if (!acceptLimitReported) {
             fprintf(stderr, "NetworkTracker::SeenAccept capacity reached; oldest pending accepts will be evicted (reported once)\n");
             acceptLimitReported = true;
         }
     }
 
-    auto timeIt = acceptTrackerTimes.emplace(eventTime, sourceAddrAndPort);
-    acceptTracker.emplace(sourceAddrAndPort, std::make_pair(destAddrAndPort, timeIt));
+    auto ret = acceptTracker.emplace(sourceAddrAndPort, std::make_pair(destAddrAndPort, acceptTrackerTimes.end()));
+    ret.first->second.second = acceptTrackerTimes.emplace(eventTime, &(ret.first->first));
 
     PurgeStale();
 }

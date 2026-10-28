@@ -210,7 +210,7 @@ class NetworkTracker
 
     // accept tracking
     static constexpr size_t MAX_ACCEPT_ENTRIES = 65536;
-    using AcceptTrackerTimes = std::multimap<LONGLONG, AddrAndPort>;
+    using AcceptTrackerTimes = std::multimap<LONGLONG, const AddrAndPort *>;
     std::unordered_map<AddrAndPort, std::pair<AddrAndPort, AcceptTrackerTimes::iterator>> acceptTracker;
     AcceptTrackerTimes acceptTrackerTimes;
     bool acceptLimitReported = false;
