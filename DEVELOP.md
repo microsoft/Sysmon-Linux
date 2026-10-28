@@ -25,6 +25,39 @@ make
 
 ## Debugging
 
+### Pending TCP accepts
+
+The network tracker retains at most 65,536 pending accept transitions and their
+timestamp records. At capacity, a new source evicts the oldest event, so unusually
+delayed accepts may lose their network-event correlation during saturation.
+The first eviction emits a diagnostic to stderr (once per tracker lifetime).
+Replacing an existing source refreshes its record without evicting another source.
+Equal timestamps are tracked independently. Stale records are purged on traffic
+using the existing 15-minute lifetime and one-minute check interval; continuous
+traffic does not postpone the next check.
+
+Run the focused regressions from the configured Linux build directory:
+```
+cmake --build . --target sysmonUnitTests
+./sysmonUnitTests --gtest_filter=NetworkTrackerTest.*
+```
+These tests exercise the bound without generating network traffic. They also
+cover duplicate timestamps, source replacement, expiry, and match/close cleanup.
+For a manual compatibility check on an isolated Linux VM, enable NetworkConnect
+logging without excluding loopback, start
+`python3 -m http.server 18080 --bind 127.0.0.1`, and make ten requests:
+```
+for i in $(seq 1 10); do
+    curl --noproxy '*' --max-time 3 -fsS http://127.0.0.1:18080/ -o /dev/null
+done
+```
+Verify inbound Event ID 3 records have the Python server PID, `Initiated=false`,
+and destination port 18080. Stop the server with Ctrl-C. Repeat with the server
+bound to `::1` on port 18081 and URL `http://[::1]:18081/` for IPv6.
+Use the synthetic regressions, not a live network flood, to check saturation.
+
+### Attaching a debugger
+
 Both the main program and the libary can be set to build with symbols by
 setting the CMAKE\_BUILD\_TYPE to Debug in the CMakeLists.txt files.  You may
 need to remove the build directory and rebuild from scratch to be sure that
