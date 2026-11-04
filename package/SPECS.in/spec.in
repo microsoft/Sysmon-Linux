@@ -2,6 +2,7 @@ Name:		sysmonforlinux
 Version:	@PROJECT_VERSION_MAJOR@.@PROJECT_VERSION_MINOR@.@PROJECT_VERSION_PATCH@
 Release:	@PROJECT_VERSION_TWEAK@%{?dist}
 Summary:	A system monitor based on eBPF, ported from Windows, that outputs events to Syslog
+Requires:	sysinternalsebpf >= 2.3.0
 
 License:	MIT/GPL2
 URL:		https://github.com/Sysinternals
