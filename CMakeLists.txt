@@ -156,6 +156,11 @@ set(PACKAGE_NAME "sysmonforlinux")
 add_compile_options(-Wall -Werror -g -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -fstack-protector-all -O2)
 
 #
+# enable NX (No-Execute) protection by disabling executable stack
+#
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,noexecstack")
+
+#
 # support for C++17
 #
 set(CMAKE_CXX_FLAGS "-std=gnu++17 -Wno-write-strings")
