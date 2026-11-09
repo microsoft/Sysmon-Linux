@@ -74,6 +74,7 @@ int ProcTerminated(struct tracepoint__sched__sched_process_exit *args)
     event->m_EventTime.QuadPart = (bpf_ktime_get_ns() + config->bootNsSinceEpoch) / 100;
 
     ptr = (char *)(event + 1);
+    memset(event->m_Extensions, 0, sizeof(event->m_Extensions));
 
     // get the task struct
     task = (const void *)bpf_get_current_task();
