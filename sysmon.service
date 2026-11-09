@@ -27,5 +27,76 @@ LimitMEMLOCK=infinity
 Restart=on-failure
 RestartSec=10
 
+# Hardening
+# Warning! Test to your context
+NoNewPrivileges=yes
+PrivateTmp=true
+ProtectHome=true
+ProtectSystem=true
+# Only Ubuntu 21.04 or above
+# ProtectProc=noaccess
+{% endif %}
+
+PrivateDevices=yes
+DeviceAllow=
+
+PrivateUsers=false
+DynamicUser=false
+
+UMask=077
+
+# ReadWritePaths=
+#InaccessiblePaths=/proc
+ProtectKernelTunables=true
+ProtectKernelModules=yes
+ProtectKernelLogs=yes
+ProtectHostname=yes
+ProtectClock=yes
+ProtectControlGroups=true
+LockPersonality=true
+RestrictRealtime=true
+RestrictNamespaces=yes
+RestrictSUIDSGID=yes
+MemoryDenyWriteExecute=yes
+
+PrivateNetwork=yes
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX AF_NETLINK AF_PACKET
+
+IPAccounting=yes
+IPAddressAllow=localhost link-local multicast 10.0.0.0/8 192.168.0.0/16
+# IPAddressDeny=
+
+AmbientCapabilities=CAP_BPF CAP_PERFMON
+CapabilityBoundingSet=~CAP_AUDIT_CONTROL CAP_AUDIT_READ CAP_DAC_READ_SEARCH
+CapabilityBoundingSet=~CAP_SYS_RAWIO
+CapabilityBoundingSet=~CAP_SYS_PTRACE
+CapabilityBoundingSet=~CAP_DAC_* CAP_FOWNER CAP_IPC_OWNER
+CapabilityBoundingSet=~CAP_NET_ADMIN
+CapabilityBoundingSet=~CAP_KILL
+CapabilityBoundingSet=~CAP_NET_BIND_SERVICE CAP_NET_BROADCAST
+CapabilityBoundingSet=~CAP_SYS_BOOT
+CapabilityBoundingSet=~CAP_LINUX_IMMUTABLE
+CapabilityBoundingSet=~CAP_SYS_CHROOT
+CapabilityBoundingSet=~CAP_BLOCK_SUSPEND
+CapabilityBoundingSet=~CAP_LEASE
+CapabilityBoundingSet=~CAP_SYS_PACCT
+CapabilityBoundingSet=~CAP_SYS_TTY_CONFIG
+# CapabilityBoundingSet=~CAP_SYS_ADMIN
+# CapabilityBoundingSet=~CAP_SYS_NICE CAP_SYS_RESOURCE
+# CapabilityBoundingSet=~CAP_SETUID CAP_SETGID CAP_SETPCAP
+# CapabilityBoundingSet=~CAP_CHOWN CAP_FSETID CAP_SETFCAP
+# CapabilityBoundingSet=~CAP_NET_RAW
+# CapabilityBoundingSet=~CAP_IPC_LOCK
+
+SystemCallFilter=@system-service @debug @privileged
+SystemCallFilter=~@mount @cpu-emulation @obsolete @resources @clock @swap @reboot @module
+SystemCallArchitectures=native
+# When system call is disallowed, return error code instead of killing process
+SystemCallErrorNumber=EPERM
+
+CPUShares=1024
+CPUQuota=20%
+MemoryLimit=1G
+
 [Install]
 WantedBy=multi-user.target
