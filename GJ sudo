@@ -1,0 +1,41 @@
+How to Store/redirect syslogs to a custom file
+ --------------------------------------------------------step#1-------------------------------------------------------------------------------------------
+first of all create a file with the name of sysmon.log at /var/log destination
+as,
+----------> touch /var/log/sysmon.log file will be created 
+--------------------------------------------------------step#2--------------------------------------------------------------------------------------------
+after that create a new configuration file in rsyslog.d
+for creating this file we need the root privilege 
+
+for root privilege:
+---------->  sudo su -
+now create the configuration file,
+--------------------------------------------------------step#3--------------------------------------------------------------------------------------------
+--------->  touch /etc/rsyslog.d/00_sysmon.conf
+file will be created with the name of "00_sysmon.conf"
+
+now add the script in this configuration file, which is;
+--------------------------------------------------------step#4--------------------------------------------------------------------------------------------
+--------> # copy to /etc/rsyslog.d/00_sysmon.conf
+if ( $programname == "sysmon" ) then {
+    action(type="omfile" file="/var/log/sysmon.log" flushOnTXEnd="on")
+    stop
+}
+  
+---------> save and exit ctrl+o save and ctrl+x to exit back to the terminal
+--------------------------------------------------------step#5--------------------------------------------------------------------------------------------
+after writing this script give the permissions to sysmon.log files as,
+
+sudo chgrp syslog /var/sysmon.log
+sudo chmod 664 /var/sysmon.log
+
+--------------------------------------------------------step#6--------------------------------------------------------------------------------------------
+after givin these permissions;
+must restart,
+-------> sudo systemctl restart rsyslog
+
+your after restarting your system, check the sysmon.log
+
+tail -f /var/log/sysmon.log this is continously executeable for stopping ctrl+z
+           or
+car -f /var/log/sysmon.log
